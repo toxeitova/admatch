@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-page text-ink antialiased;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent-strong ring-offset-2 ring-offset-page;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-5xl px-4 sm:px-6;
+  }
+  .btn {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-card px-5 py-3 text-base font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply btn bg-accent-strong text-white shadow-soft hover:bg-accent-hover;
+  }
+  .btn-secondary {
+    @apply btn border border-line bg-white text-ink hover:border-ink/30;
+  }
+  .btn-sm {
+    @apply min-h-[40px] px-4 py-2 text-sm;
+  }
+  .card {
+    @apply rounded-card bg-white shadow-soft;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-full bg-page px-3 py-1 text-sm font-medium text-ink-muted;
+  }
+  .field-label {
+    @apply mb-2 block text-base font-bold text-ink;
+  }
+  .field-hint {
+    @apply mt-1.5 text-sm text-ink-faint;
+  }
+  .field-error {
+    @apply mt-1.5 text-sm font-semibold text-accent-ink;
+  }
+  .input {
+    @apply block w-full rounded-xl border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-ink-faint/80 focus:border-accent-strong focus:outline-none focus:ring-2 focus:ring-accent-strong/20;
+  }
+  .input-invalid {
+    @apply border-accent-strong;
+  }
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-line;
+  }
+}
