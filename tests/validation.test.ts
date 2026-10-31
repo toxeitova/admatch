@@ -50,7 +50,7 @@ describe("requestSchema", () => {
 });
 
 describe("контакт", () => {
-  it.each(["+7 701 123 45 67", "87011234567", "+77011234567", "@coffee_shop", "t.me/coffee_shop", "701 123 45 67", "coffee_shop", "goodtill_team"])(
+  it.each(["+7 701 123 45 67", "87011234567", "+77011234567", "@coffee_shop", "t.me/coffee_shop", "701 123 45 67", "coffee_shop", "almaty_cafe"])(
     "валиден: %s",
     (c) => expect(isValidContact(c)).toBe(true),
   );
