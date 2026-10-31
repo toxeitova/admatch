@@ -10,8 +10,8 @@ const msg = (message: string) => ({ errorMap: () => ({ message }) });
 const age = z
   .number({ required_error: E.required, invalid_type_error: E.required })
   .int(E.age)
-  .min(14, E.age)
-  .max(65, E.age);
+  .min(0, E.age)
+  .max(80, E.age);
 
 const amount = z
   .number({ required_error: E.required, invalid_type_error: E.required })

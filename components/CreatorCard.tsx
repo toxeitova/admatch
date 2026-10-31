@@ -125,6 +125,14 @@ export function CreatorCard({
         <Metric label={c.er} value={orDash(cr.er_pct, formatPct)} />
       </dl>
 
+      {/* A8, Версия B: дата проверки статистики видна сразу (замечание T5), а не только в «Подробнее» */}
+      {cr.data_checked_at && (
+        <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-[#1E6B47]">
+          <IconBadgeCheck />
+          {c.verified(formatDate(cr.data_checked_at))}
+        </p>
+      )}
+
       {/* Цены */}
       {prices.length > 0 && (
         <div className="mt-5">
@@ -174,12 +182,6 @@ export function CreatorCard({
             {cr.tiktok_url && <ExtLink href={cr.tiktok_url}>{c.tiktok}</ExtLink>}
           </div>
 
-          {cr.data_checked_at && (
-            <p className="flex items-center gap-2 text-sm font-semibold text-[#1E6B47]">
-              <IconBadgeCheck />
-              {c.verified(formatDate(cr.data_checked_at))}
-            </p>
-          )}
           {cr.last_post_at && <p className="text-sm text-ink-muted">{c.active(formatDate(cr.last_post_at))}</p>}
         </div>
       )}
@@ -206,7 +208,11 @@ export function CreatorCard({
 
 function FitBadge({ score, className }: { score: number; className: string }) {
   return (
-    <span className={`inline-flex rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-accent-ink ${className}`}>
+    // A8, Версия B: зелёный бейдж вместо красного (замечание T2: красный читается как «плохо»)
+    <span
+      title={c.fitExplain}
+      className={`inline-flex rounded-full bg-[#DDF3E8] px-3 py-1 text-sm font-bold text-[#1E6B47] ${className}`}
+    >
       {c.fit(score)}
     </span>
   );

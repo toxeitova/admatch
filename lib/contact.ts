@@ -18,7 +18,8 @@ function phoneDigits(raw: string): string | null {
 function telegramHandle(raw: string): string | null {
   const s = raw.trim();
   const fromLink = s.match(/^(?:https?:\/\/)?(?:t\.me|telegram\.me)\/([A-Za-z0-9_]+)\/?$/i);
-  const handle = fromLink ? fromLink[1] : s.startsWith("@") ? s.slice(1) : null;
+  // Ник принимаем и с «@», и без него (A8, Версия B: замечание T3 «не получается указать ник Telegram»)
+  const handle = fromLink ? fromLink[1] : s.startsWith("@") ? s.slice(1) : s;
   return handle && TG_HANDLE.test(handle) ? handle : null;
 }
 

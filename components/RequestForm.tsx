@@ -300,6 +300,9 @@ export function RequestForm() {
             describedBy={describedBy("age_to")}
           />
         </div>
+        <p id="hint-age" className="field-hint">
+          {f.age.hint}
+        </p>
         <FieldError id="age_from" message={err("age_from")} />
         {!err("age_from") && <FieldError id="age_to" message={err("age_to")} />}
       </fieldset>
@@ -356,7 +359,20 @@ export function RequestForm() {
         <legend className="field-label">
           {f.budget.label} <Req />
         </legend>
-        <div className="grid grid-cols-2 gap-3 sm:max-w-md">
+        <BudgetSlider
+          min={state.budget_min}
+          max={state.budget_max}
+          onChange={(lo, hi) => {
+            markStarted();
+            const next = { ...state, budget_min: lo, budget_max: hi };
+            setState(next);
+            if (submitted) {
+              const r = requestSchema.safeParse(toPayload(next));
+              setErrors(r.success ? {} : fieldErrors(r.error));
+            }
+          }}
+        />
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:max-w-md">
           <MoneyBox
             id="budget_min"
             label={f.budget.from}
@@ -632,6 +648,61 @@ function NumberBox(props: {
         aria-invalid={props.invalid}
         aria-describedby={props.describedBy}
       />
+    </div>
+  );
+}
+
+// A8, Версия B: ползунок бюджета с двумя ручками (замечание T4 про поля «от и до»).
+// Ручки синхронизированы с полями ввода ниже, точную сумму можно вписать вручную.
+const B_MIN = 0;
+const B_MAX = 500_000;
+const B_STEP = 5_000;
+const B_DEFAULT: [number, number] = [30_000, 100_000];
+
+function BudgetSlider(props: { min: string; max: string; onChange: (lo: string, hi: string) => void }) {
+  const clamp = (n: number) => Math.min(B_MAX, Math.max(B_MIN, n));
+  const lo = clamp(parseAmount(props.min) ?? B_DEFAULT[0]);
+  const hi = clamp(parseAmount(props.max) ?? B_DEFAULT[1]);
+  const fmt = (n: number) => formatThousands(n).replace(/ /g, "\u00a0");
+  const pct = (n: number) => ((n - B_MIN) / (B_MAX - B_MIN)) * 100;
+  const set = (a: number, b: number) => props.onChange(fmt(a), fmt(b));
+  return (
+    <div className="sm:max-w-md">
+      <div className="mb-2 flex items-baseline justify-between text-lg font-extrabold tabular-nums" aria-hidden="true">
+        <span>{fmt(lo)} ₸</span>
+        <span className="text-ink-faint">—</span>
+        <span>
+          {fmt(hi)}
+          {hi >= B_MAX ? "+" : ""} ₸
+        </span>
+      </div>
+      <div className="budget-range relative h-8">
+        <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-line" />
+        <div
+          className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-accent-strong"
+          style={{ left: `${pct(lo)}%`, right: `${100 - pct(hi)}%` }}
+        />
+        <input
+          type="range"
+          aria-label={f.budget.sliderMin}
+          min={B_MIN}
+          max={B_MAX}
+          step={B_STEP}
+          value={lo}
+          onChange={(e) => set(Math.min(Number(e.target.value), hi - B_STEP), hi)}
+          className="absolute inset-0 w-full"
+        />
+        <input
+          type="range"
+          aria-label={f.budget.sliderMax}
+          min={B_MIN}
+          max={B_MAX}
+          step={B_STEP}
+          value={hi}
+          onChange={(e) => set(lo, Math.max(Number(e.target.value), lo + B_STEP))}
+          className="absolute inset-0 w-full"
+        />
+      </div>
     </div>
   );
 }

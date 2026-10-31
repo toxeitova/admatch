@@ -36,6 +36,11 @@ export function ResultsView({ request, matches }: { request: PublicRequest; matc
             {r.h1(n, pluralRu(n, r.bloggerForms))}
           </h1>
           <p className="mt-3 text-lg text-ink-muted">{r.subtitle}</p>
+          {/* A8, Версия B: объясняем, как считается процент (замечание T5) */}
+          <details className="mt-3 max-w-2xl rounded-xl border border-line bg-white px-4 py-3 text-sm">
+            <summary className="cursor-pointer font-bold text-ink">{copy.card.fitHow}</summary>
+            <p className="mt-2 leading-relaxed text-ink-muted">{copy.card.fitExplain}</p>
+          </details>
           <RequestSummary request={request} />
         </header>
       ) : (

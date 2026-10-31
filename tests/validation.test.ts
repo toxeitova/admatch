@@ -34,8 +34,9 @@ describe("requestSchema", () => {
     expect(errorsFor({ niches: [] }).niches).toBe(copy.errors.niches);
     expect(errorsFor({ niches: ["Авто", "Лайфстайл", "Путешествия", "Образование"] }).niches).toBe(copy.errors.niches);
     expect(errorsFor({ budget_max: 20000 }).budget_max).toBe(copy.errors.budget);
-    expect(errorsFor({ age_from: 10 }).age_from).toBe(copy.errors.age);
-    expect(errorsFor({ age_to: 70 }).age_to).toBe(copy.errors.age);
+    expect(errorsFor({ age_from: 81 }).age_from).toBe(copy.errors.age);
+    expect(errorsFor({ age_from: 7, age_to: 77 }).age_from).toBeUndefined();
+    expect(errorsFor({ age_to: 90 }).age_to).toBe(copy.errors.age);
     expect(errorsFor({ contact: "привет" }).contact).toBe(copy.errors.contact);
     expect(errorsFor({ consent: false }).consent).toBe(copy.errors.consent);
     expect(errorsFor({ gender: undefined }).gender).toBe(copy.errors.required);
@@ -49,7 +50,7 @@ describe("requestSchema", () => {
 });
 
 describe("контакт", () => {
-  it.each(["+7 701 123 45 67", "87011234567", "+77011234567", "@coffee_shop", "t.me/coffee_shop", "701 123 45 67"])(
+  it.each(["+7 701 123 45 67", "87011234567", "+77011234567", "@coffee_shop", "t.me/coffee_shop", "701 123 45 67", "coffee_shop", "goodtill_team"])(
     "валиден: %s",
     (c) => expect(isValidContact(c)).toBe(true),
   );
@@ -58,6 +59,7 @@ describe("контакт", () => {
   it("телефон → WhatsApp, @ник → Telegram", () => {
     expect(parseContact("8 (701) 123-45-67")).toMatchObject({ kind: "phone", href: "https://wa.me/77011234567" });
     expect(parseContact("@test_dasha")).toMatchObject({ kind: "telegram", href: "https://t.me/test_dasha" });
+    expect(parseContact("test_dasha")).toMatchObject({ kind: "telegram", display: "@test_dasha" });
     expect(parseContact("https://t.me/test_dasha")).toMatchObject({ kind: "telegram", display: "@test_dasha" });
   });
 });

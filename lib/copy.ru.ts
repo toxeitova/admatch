@@ -15,6 +15,14 @@ export const copy = {
   footer: {
     copyright: "© AdMatch, 2026 · Алматы",
     terms: "Условия и конфиденциальность",
+    support: "Связаться с AdMatch в WhatsApp",
+  },
+
+  support: {
+    // Контакт команды AdMatch (A8, Версия B: замечание T4 «нет связи с AdMatch / поддержки»)
+    whatsapp: "77071318309",
+    message: "Здравствуйте! Вопрос по AdMatch: ",
+    nav: "Поддержка",
   },
 
   home: {
@@ -58,7 +66,7 @@ export const copy = {
     },
     city: { label: "Город", soon: "Скоро — Астана и Шымкент" },
     niches: { label: "Ниши блогеров", hint: "Выберите до 3 ниш, близких вашему продукту" },
-    age: { label: "Возраст ваших клиентов", from: "от", to: "до" },
+    age: { label: "Возраст ваших клиентов", from: "от", to: "до", hint: "От 0 до 80 лет. Для детских товаров можно указать возраст детей" },
     gender: {
       label: "Пол ваших клиентов",
       options: { f: "Женщины", m: "Мужчины", all: "Все" },
@@ -73,7 +81,9 @@ export const copy = {
       to: "до",
       placeholderFrom: "30 000",
       placeholderTo: "80 000",
-      hint: "Сколько готовы заплатить за одну рекламу",
+      hint: "Сколько готовы заплатить за одну рекламу. Двигайте ползунок или впишите сумму",
+      sliderMin: "Бюджет от",
+      sliderMax: "Бюджет до",
     },
     deadline: {
       label: "Когда нужна публикация?",
@@ -100,7 +110,7 @@ export const copy = {
     },
     contact: {
       label: "Ваш контакт для связи",
-      placeholder: "+7 7XX XXX XX XX или @telegram",
+      placeholder: "+7 7XX XXX XX XX или ник в Telegram",
       hint: "Блогерам не передаём без вашего выбора",
     },
     consent: {
@@ -120,8 +130,8 @@ export const copy = {
     required: "Заполните это поле",
     niches: "Выберите от 1 до 3 ниш",
     budget: "Сумма „до“ должна быть больше суммы „от“",
-    age: "Укажите возраст от 14 до 65",
-    contact: "Укажите телефон или @ник в Telegram",
+    age: "Укажите возраст от 0 до 80",
+    contact: "Укажите телефон или ник в Telegram (например, @admatch_kz)",
     consent: "Нужно согласие, чтобы мы могли показать подборку",
     server: "Что-то пошло не так. Попробуйте ещё раз через минуту.",
     tooLong: "Слишком длинный текст",
@@ -163,7 +173,9 @@ export const copy = {
     pastAd: "Пример рекламы",
     instagram: "Instagram",
     tiktok: "TikTok",
-    verified: (date: string) => `Данные проверены ${date}`,
+    verified: (date: string) => `Статистика проверена ${date}`,
+    fitHow: "Как считается процент?",
+    fitExplain: "Ниша до 40 баллов, бюджет до 20, возраст и пол аудитории до 20, доля Алматы до 10, вовлечённость до 10. Сумма = процент совпадения.",
     active: (date: string) => `Активен: последняя публикация ${date}`,
     noData: "—",
     avatarAlt: (handle: string) => `Аватар @${handle}`,
