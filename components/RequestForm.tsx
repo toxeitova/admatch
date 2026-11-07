@@ -8,6 +8,7 @@ import { copy } from "@/lib/copy.ru";
 import { formatThousands, parseAmount } from "@/lib/format";
 import { CITIES, DEADLINES, FORMATS, GENDERS, GOALS, NICHES, type Format } from "@/lib/niches";
 import { fieldErrors, requestSchema } from "@/lib/validation";
+import { suggestNiches } from "@/lib/nicheSuggest";
 
 const f = copy.form;
 const MAX_NICHES = 3;
@@ -252,6 +253,26 @@ export function RequestForm() {
         <legend className="field-label">
           {f.niches.label} <Req />
         </legend>
+        {/* A9: подсказка ниш по описанию продукта (T2) */}
+        {(() => {
+          const sug = suggestNiches(state.product).filter((n) => !state.niches.includes(n));
+          if (sug.length === 0 || state.niches.length >= MAX_NICHES) return null;
+          return (
+            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl bg-[#DDF3E8] px-3 py-2" aria-live="polite">
+              <span className="text-sm font-semibold text-[#1E6B47]">{f.niches.suggest}</span>
+              {sug.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => toggleNiche(n)}
+                  className="rounded-full border border-[#1E6B47] bg-white px-3 py-1 text-sm font-bold text-[#1E6B47] hover:bg-[#1E6B47] hover:text-white"
+                >
+                  + {n}
+                </button>
+              ))}
+            </div>
+          );
+        })()}
         <div className="flex flex-wrap gap-2">
           {NICHES.map((n) => {
             const selected = state.niches.includes(n);
