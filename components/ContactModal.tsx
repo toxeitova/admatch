@@ -129,13 +129,15 @@ export function ContactModal({
                     <h3 id={`opt-${choice}`} className="text-lg font-extrabold">
                       {o.title}
                     </h3>
-                    <ul className="mt-2 flex-1 space-y-2 text-ink-muted">
+                    <ul className="mt-3 flex-1 space-y-2 text-ink-muted">
                       {o.lines.map((l) => (
-                        <li key={l} className="leading-relaxed">
-                          {l}
+                        <li key={l} className="flex gap-2 leading-snug">
+                          <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#1E6B47]" />
+                          <span>{l}</span>
                         </li>
                       ))}
                     </ul>
+                    <p className="mt-3 rounded-lg bg-page px-3 py-2 text-sm font-bold text-ink">{o.price}</p>
                     <button
                       type="button"
                       onClick={() => choose(choice)}
