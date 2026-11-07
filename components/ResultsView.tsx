@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { getRequestContact, markResultsViewed, secondsFromLanding, track } from "@/lib/analytics";
+import { getRequestContact, markResultsViewed, saveRecentResult, secondsFromLanding, track } from "@/lib/analytics";
+import { RecentResults } from "./RecentResults";
 import { copy } from "@/lib/copy.ru";
 import { formatPrice, pluralRu } from "@/lib/format";
 import type { PublicMatch, PublicRequest } from "@/lib/types";
@@ -20,11 +21,12 @@ export function ResultsView({ request, matches }: { request: PublicRequest; matc
   useEffect(() => {
     const saved = getRequestContact(request.id);
     if (saved) setBusinessContact(saved);
+    saveRecentResult({ id: request.id, product: request.product, at: new Date().toISOString() });
     if (markResultsViewed(request.id)) {
       track("results_viewed", { matches_count: n }, request.id);
       track("time_to_results", { seconds_from_landing: secondsFromLanding() }, request.id);
     }
-  }, [request.id, n]);
+  }, [request.id, request.product, n]);
 
   const closeModal = useCallback(() => setContactTarget(null), []);
 
@@ -68,6 +70,7 @@ export function ResultsView({ request, matches }: { request: PublicRequest; matc
         <div className="mt-6 rounded-card border-2 border-dashed border-accent/50 bg-accent-soft p-5 sm:p-6">
           <p className="font-semibold leading-relaxed">{copy.manual.banner}</p>
           <ManualRequest requestId={request.id} contact={businessContact} className="mt-4" />
+          <RecentResults exclude={request.id} className="mt-6" />
         </div>
       )}
 

@@ -2,7 +2,7 @@ import "server-only";
 // Доступ к данным для API-роутов и серверных страниц. Все запросы — через service_role.
 import { db } from "./supabase.server";
 import { showTestData } from "./env";
-import { buildWhyFits, parseLikedHandles, rankCreators } from "./matching";
+import { buildWhyFits, parseLikedHandles, rankCreators, scoreCreator } from "./matching";
 import { PUBLIC_CREATOR_COLUMNS, PUBLIC_REQUEST_COLUMNS, toPublicCreator } from "./publicCreator";
 import { deadlineValue, type RequestData } from "./validation";
 import type { Format } from "./niches";
@@ -131,7 +131,9 @@ export async function getResults(id: string): Promise<ResultsPayload | null> {
     .filter((m) => m.creators)
     .map((m) => {
       const creator = toPublicCreator(m.creators!);
+      const b = scoreCreator({ ...creator, consent: true, is_test: false }, matchReq);
       return {
+        parts: { niche: Math.round(b.niche), budget: b.budget, audience: b.age + b.gender, almaty: b.almaty, er: b.er },
         rank: m.rank,
         score: m.score,
         whyFits: buildWhyFits({ ...creator, consent: true, is_test: false }, matchReq),

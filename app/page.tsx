@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { RecentResults } from "@/components/RecentResults";
 import { IconArrowRight, IconBadgeCheck, IconHandshake, IconPin, IconTag } from "@/components/Icons";
 import { copy } from "@/lib/copy.ru";
 
@@ -26,6 +27,7 @@ export default function HomePage() {
               </Link>
               <p className="text-sm text-ink-faint">{t.ctaNote}</p>
             </div>
+            <RecentResults className="mt-8 max-w-xl" />
           </div>
         </section>
 

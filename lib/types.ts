@@ -75,4 +75,6 @@ export interface PublicMatch {
   score: number;
   whyFits: string;
   creator: PublicCreator;
+  /** A9: из чего сложился процент (замечание T5). */
+  parts?: { niche: number; budget: number; audience: number; almaty: number; er: number };
 }

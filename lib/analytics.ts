@@ -10,7 +10,23 @@ const KEYS = {
   draft: "am_form_draft",
   contactFor: (requestId: string) => `am_contact:${requestId}`,
   viewed: (requestId: string) => `am_viewed:${requestId}`,
+  recent: "am_recent_results",
 };
+
+// A9: «Мои подборки» без регистрации (замечания T1, T3 про личный кабинет). Хранится только на этом устройстве.
+export interface RecentResult { id: string; product: string; at: string }
+export function getRecentResults(): RecentResult[] {
+  try {
+    const v = JSON.parse(storageGet(KEYS.recent) || "[]");
+    return Array.isArray(v) ? v.slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+export function saveRecentResult(r: RecentResult): void {
+  const list = [r, ...getRecentResults().filter((x) => x.id !== r.id)].slice(0, 5);
+  storageSet(KEYS.recent, JSON.stringify(list));
+}
 
 const memory = new Map<string, string>();
 

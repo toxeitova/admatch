@@ -60,7 +60,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl bg-page px-3 py-2.5">
       <dt className="text-xs font-medium text-ink-muted">{label}</dt>
-      <dd className="mt-0.5 text-lg font-extrabold tabular-nums">{value}</dd>
+      <dd className="mt-0.5 text-2xl font-extrabold tabular-nums">{value}</dd>
     </div>
   );
 }
@@ -78,7 +78,7 @@ export function CreatorCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const detailsId = useId();
-  const { creator: cr, score, whyFits } = match;
+  const { creator: cr, score, whyFits, parts } = match;
   const prices = PRICE_FIELDS.filter(([, field]) => cr[field] != null);
 
   const toggle = () => {
@@ -158,6 +158,39 @@ export function CreatorCard({
           <h3 className="text-sm font-bold">{c.whyFits}</h3>
           <p className="mt-1 leading-relaxed text-ink-muted">{whyFits}</p>
         </div>
+      )}
+
+      {/* A9: из чего сложился процент (T5) */}
+      {parts && (
+        <div className="mt-4 rounded-xl bg-[#F1FAF5] px-4 py-3">
+          <h3 className="text-sm font-bold text-[#1E6B47]">{c.partsTitle(score)}</h3>
+          <ul className="mt-2 space-y-1.5">
+            {([["niche", 40], ["budget", 20], ["audience", 20], ["almaty", 10], ["er", 10]] as const).map(([k, max]) => (
+              <li key={k} className="grid grid-cols-[1fr_96px_44px] items-center gap-2 text-sm">
+                <span className="text-ink-muted">{c.parts[k]}</span>
+                <span className="h-2 overflow-hidden rounded-full bg-white">
+                  <span className="block h-full rounded-full bg-[#2E9D6A]" style={{ width: `${Math.round((parts[k] / max) * 100)}%` }} />
+                </span>
+                <span className="text-right font-semibold tabular-nums">
+                  {parts[k]}/{max}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* A9: профиль блогера сразу на карточке (T2, T5) */}
+      {cr.instagram_url && (
+        <a
+          href={cr.instagram_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-accent-ink underline-offset-4 hover:underline"
+        >
+          {c.profile}
+          <IconExternal className="h-4 w-4" />
+        </a>
       )}
 
       {/* Полная карточка */}
