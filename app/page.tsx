@@ -26,6 +26,9 @@ export default function HomePage() {
                 <IconArrowRight />
               </Link>
               <p className="text-sm text-ink-faint">{t.ctaNote}</p>
+              <Link href="/creator/join" className="btn-secondary mt-2 w-full xs:w-auto">
+                Я блогер — разместить профиль
+              </Link>
             </div>
             <RecentResults className="mt-8 max-w-xl" />
           </div>

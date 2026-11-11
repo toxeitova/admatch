@@ -6,6 +6,7 @@ import { formatCount, formatDate, formatPct, formatPrice } from "@/lib/format";
 import { FORMAT_LABELS } from "@/lib/matching";
 import type { Format } from "@/lib/niches";
 import type { PublicMatch } from "@/lib/types";
+import { PRICE_KEYS, PRICE_LABELS } from "@/lib/creatorValidation";
 import { IconBadgeCheck, IconChevron, IconExternal } from "./Icons";
 
 const c = copy.card;
@@ -79,7 +80,10 @@ export function CreatorCard({
   const [expanded, setExpanded] = useState(false);
   const detailsId = useId();
   const { creator: cr, score, whyFits, parts } = match;
-  const prices = PRICE_FIELDS.filter(([, field]) => cr[field] != null);
+  // Цены по форматам из кабинета блогера; если их нет — старые поля
+  const detailed = PRICE_KEYS.filter((k) => cr[k] != null && cr[k]! > 0);
+  const prices = detailed.length ? [] : PRICE_FIELDS.filter(([, field]) => cr[field] != null);
+  const availability = match.availability ?? [];
 
   const toggle = () => {
     if (!expanded) onOpen();
@@ -134,10 +138,15 @@ export function CreatorCard({
       )}
 
       {/* Цены */}
-      {prices.length > 0 && (
+      {(prices.length > 0 || detailed.length > 0) && (
         <div className="mt-5">
           <h3 className="text-sm font-bold text-ink-muted">{c.prices}</h3>
           <ul className="mt-1.5 space-y-1">
+            {detailed.map((k) => (
+              <li key={k} className="font-semibold tabular-nums">
+                {c.priceLine(PRICE_LABELS[k], formatPrice(cr[k]!))}
+              </li>
+            ))}
             {prices.map(([fmt, field]) => (
               <li key={fmt} className="font-semibold tabular-nums">
                 {c.priceLine(FORMAT_LABELS[fmt], formatPrice(cr[field]!))}
@@ -150,6 +159,14 @@ export function CreatorCard({
             </p>
           )}
         </div>
+      )}
+
+      {/* Свободные даты из кабинета блогера */}
+      {availability.length > 0 && (
+        <p className="mt-4 rounded-xl bg-[#EEF4FF] px-4 py-2.5 text-sm">
+          <span className="font-bold text-[#1D5A94]">{c.freeDates} </span>
+          {availability.join("; ")}
+        </p>
       )}
 
       {/* Почему подходит */}
@@ -239,12 +256,20 @@ export function CreatorCard({
   );
 }
 
+/** Цвет бейджа: от красного (50% и ниже) к зелёному (100%). */
+export function fitColors(score: number): { backgroundColor: string; color: string } {
+  const t = Math.min(1, Math.max(0, (score - 50) / 50));
+  const hue = Math.round(t * 130);
+  return { backgroundColor: `hsl(${hue} 75% 91%)`, color: `hsl(${hue} 70% 27%)` };
+}
+
 function FitBadge({ score, className }: { score: number; className: string }) {
   return (
     // A8, Версия B: зелёный бейдж вместо красного (замечание T2: красный читается как «плохо»)
     <span
       title={c.fitExplain}
-      className={`inline-flex rounded-full bg-[#DDF3E8] px-3 py-1 text-sm font-bold text-[#1E6B47] ${className}`}
+      className={`inline-flex rounded-full px-3 py-1 text-sm font-bold ${className}`}
+      style={fitColors(score)}
     >
       {c.fit(score)}
     </span>

@@ -1,0 +1,30 @@
+import { json, readJson, serverError } from "@/lib/api";
+import { setCreatorSession, verifyPassword } from "@/lib/auth";
+import { findAccountByEmail, touchLogin } from "@/lib/creatorData";
+import { loginSchema } from "@/lib/creatorValidation";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
+
+export async function POST(req: Request) {
+  let body: unknown;
+  try {
+    body = await readJson(req);
+  } catch {
+    return json({ error: "bad_request" }, 400);
+  }
+  const parsed = loginSchema.safeParse(body);
+  if (!parsed.success) return json({ error: "Проверьте email и пароль" }, 400);
+  if (!rateLimit(`creator-login:${clientIp(req.headers)}`, 20, 15 * 60 * 1000)) {
+    return json({ error: "Слишком много попыток. Попробуйте через 15 минут." }, 429);
+  }
+  try {
+    const acc = await findAccountByEmail(parsed.data.email);
+    if (!acc || !verifyPassword(parsed.data.password, acc.password_hash)) {
+      return json({ error: "Неверный email или пароль" }, 401);
+    }
+    await setCreatorSession(acc.creator_id);
+    await touchLogin(acc.creator_id);
+    return json({ ok: true });
+  } catch (e) {
+    return serverError(e, "POST /api/creator/login");
+  }
+}

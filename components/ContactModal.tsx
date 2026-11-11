@@ -89,7 +89,8 @@ export function ContactModal({
     }
   }
 
-  const options: Choice[] = order === "admatch_first" ? ["admatch", "direct"] : ["direct", "admatch"];
+  // Связь только через AdMatch: вариант «Напрямую» убран по решению команды (11 Nov 2026).
+  const options: Choice[] = ["admatch"];
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
@@ -100,7 +101,7 @@ export function ContactModal({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="relative max-h-[92dvh] w-full overflow-y-auto rounded-t-[20px] bg-white p-5 shadow-lift outline-none sm:max-w-2xl sm:rounded-card sm:p-7"
+        className="relative max-h-[92dvh] w-full overflow-y-auto rounded-t-[20px] bg-white p-5 shadow-lift outline-none sm:max-w-lg sm:rounded-card sm:p-7"
       >
         <button
           type="button"
@@ -117,7 +118,7 @@ export function ContactModal({
               {m.title(target.handle)}
             </h2>
             {/* Обе карточки одинаковые по размеру и весу; порядок случаен на сессию */}
-            <div className="mt-5 grid auto-rows-fr gap-3 sm:grid-cols-2">
+            <div className="mt-5 grid gap-3">
               {options.map((choice) => {
                 const o = choice === "admatch" ? m.admatch : m.direct;
                 return (

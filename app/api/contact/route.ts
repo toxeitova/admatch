@@ -21,6 +21,8 @@ export async function POST(req: Request) {
   }
 
   const { requestId, creatorId, choice } = parsed.data;
+  // Прямой контакт отключён: связь только через AdMatch (решение команды, 11 Nov 2026).
+  if (choice === "direct") return json({ error: "direct_disabled" }, 400);
   try {
     // контакт выдаём только по блогеру из подборки этой заявки
     const [request, creator] = await Promise.all([
@@ -45,7 +47,6 @@ export async function POST(req: Request) {
       ),
     );
 
-    if (choice === "direct") return json({ ok: true, contact: creator.contact ?? "" });
     return json({ ok: true });
   } catch (e) {
     return serverError(e, "POST /api/contact");

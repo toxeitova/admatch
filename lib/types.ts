@@ -23,6 +23,12 @@ export interface Creator {
   price_stories: number | null;
   price_post: number | null;
   price_tiktok: number | null;
+  price_reels_15?: number | null;
+  price_reels_60?: number | null;
+  price_post_photo?: number | null;
+  price_post_carousel?: number | null;
+  price_story_one?: number | null;
+  price_story_series?: number | null;
   production_included: boolean | null;
   past_ad_url: string | null;
   why_fits_text: string | null;
@@ -77,4 +83,6 @@ export interface PublicMatch {
   creator: PublicCreator;
   /** A9: из чего сложился процент (замечание T5). */
   parts?: { niche: number; budget: number; audience: number; almaty: number; er: number };
+  /** Свободные даты блогера, уже по-русски: «6–10, 15–20 ноября». */
+  availability?: string[];
 }

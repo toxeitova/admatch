@@ -121,3 +121,30 @@ export async function sendTelegram(text: string): Promise<boolean> {
     return false;
   }
 }
+
+// ─── Кабинет блогера ───────────────────────────────────────────────────
+const adminUrl = () => `${siteUrl()}/admin`;
+
+export function creatorRegisteredMessage(c: { handle: string; name: string; niches: string[] }): string {
+  return [`🆕 Новый блогер зарегистрировался`, `@${c.handle} · ${c.name}`, `Ниши: ${c.niches.join(", ")}`].join("\n");
+}
+
+export function statsSubmittedMessage(c: { handle: string; followers: number; screenshots: number }): string {
+  return [
+    `📊 Аналитика на проверку`,
+    `@${c.handle}: ${c.followers.toLocaleString("ru-RU")} подписчиков, скриншотов: ${c.screenshots}`,
+    `Проверить: ${adminUrl()}`,
+  ].join("\n");
+}
+
+export function availabilityChangedMessage(c: { handle: string; before: string[]; after: string[] }): string {
+  return [
+    `📅 @${c.handle} изменил свободные даты`,
+    `Было: ${c.before.length ? c.before.join("; ") : "не указаны"}`,
+    `Стало: ${c.after.length ? c.after.join("; ") : "нет свободных дат"}`,
+  ].join("\n");
+}
+
+export function pricesChangedMessage(c: { handle: string; lines: string[] }): string {
+  return [`💸 @${c.handle} обновил цены`, ...c.lines].join("\n");
+}

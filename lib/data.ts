@@ -3,6 +3,8 @@ import "server-only";
 import { db } from "./supabase.server";
 import { showTestData } from "./env";
 import { buildWhyFits, parseLikedHandles, rankCreators, scoreCreator } from "./matching";
+import { formatAvailability } from "./availability";
+import { getAvailabilityFor } from "./creatorData";
 import { PUBLIC_CREATOR_COLUMNS, PUBLIC_REQUEST_COLUMNS, toPublicCreator } from "./publicCreator";
 import { deadlineValue, type RequestData } from "./validation";
 import type { Format } from "./niches";
@@ -127,13 +129,16 @@ export async function getResults(id: string): Promise<ResultsPayload | null> {
 
   const { liked_creators, ...request } = reqRes.data as unknown as PublicRequest & { liked_creators: string | null };
   const matchReq = toMatchRequest({ ...request, liked_creators });
-  const matches: PublicMatch[] = ((matchesRes.data ?? []) as unknown as MatchRow[])
+  const rows = ((matchesRes.data ?? []) as unknown as MatchRow[]).filter((m) => m.creators);
+  const avail = await getAvailabilityFor(rows.map((m) => String(m.creators!.id))).catch(() => new Map<string, string[]>());
+  const matches: PublicMatch[] = rows
     .filter((m) => m.creators)
     .map((m) => {
       const creator = toPublicCreator(m.creators!);
       const b = scoreCreator({ ...creator, consent: true, is_test: false }, matchReq);
       return {
         parts: { niche: Math.round(b.niche), budget: b.budget, audience: b.age + b.gender, almaty: b.almaty, er: b.er },
+        availability: formatAvailability(avail.get(creator.id) ?? []),
         rank: m.rank,
         score: m.score,
         whyFits: buildWhyFits({ ...creator, consent: true, is_test: false }, matchReq),

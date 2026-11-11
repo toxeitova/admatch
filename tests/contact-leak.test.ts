@@ -20,16 +20,14 @@ describe("contact не утекает", () => {
     expect(JSON.stringify(pub)).not.toContain(row.contact!);
   });
 
-  it("contact отдаётся только в ветке choice='direct' роута /api/contact", () => {
-    const routes = ["requests/route.ts", "requests/[id]/route.ts", "manual/route.ts", "events/route.ts"];
+  it("контакт блогера не отдаётся ни одним роутом (прямой контакт отключён)", () => {
+    const routes = ["requests/route.ts", "requests/[id]/route.ts", "manual/route.ts", "events/route.ts", "contact/route.ts"];
     for (const r of routes) {
       const src = readFileSync(path.join(__dirname, "../app/api", r), "utf8");
       expect(src).not.toMatch(/contact:\s*creator/);
+      expect(src).not.toContain("creator.contact");
     }
     const contactRoute = readFileSync(path.join(__dirname, "../app/api/contact/route.ts"), "utf8");
-    const returns = contactRoute.match(/return json\([^\n]*\n?/g) ?? [];
-    const leaking = returns.filter((l) => l.includes("creator.contact"));
-    expect(leaking).toHaveLength(1);
-    expect(contactRoute).toMatch(/if \(choice === "direct"\) return json\(\{ ok: true, contact: creator\.contact/);
+    expect(contactRoute).toMatch(/if \(choice === "direct"\) return json\(\{ error: "direct_disabled" \}, 400\)/);
   });
 });

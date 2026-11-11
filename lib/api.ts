@@ -10,8 +10,8 @@ export const serverError = (e: unknown, where: string) => {
 };
 
 /** Тело запроса как JSON; поддерживает text/plain от navigator.sendBeacon. */
-export async function readJson(req: Request): Promise<unknown> {
+export async function readJson(req: Request, maxChars = 64_000): Promise<unknown> {
   const text = await req.text();
-  if (text.length > 64_000) throw new Error("payload too large");
+  if (text.length > maxChars) throw new Error("payload too large");
   return text ? JSON.parse(text) : null;
 }

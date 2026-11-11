@@ -178,6 +178,7 @@ export const copy = {
     partsTitle: (n: number) => `Из чего ${n}%`,
     parts: { niche: "Ниша", budget: "Бюджет", audience: "Возраст и пол", almaty: "Аудитория Алматы", er: "Вовлечённость" },
     profile: "Профиль в Instagram",
+    freeDates: "Свободен:",
     recentTitle: "Ваши прошлые подборки",
     recentNote: "Сохраняются только на этом устройстве",
     fitExplain: "Ниша до 40 баллов, бюджет до 20, возраст и пол аудитории до 20, доля Алматы до 10, вовлечённость до 10. Сумма = процент совпадения.",
@@ -201,7 +202,7 @@ export const copy = {
   },
 
   modal: {
-    title: (handle: string) => `Как хотите связаться с @${handle}?`,
+    title: (handle: string) => `Связаться с @${handle} через AdMatch`,
     close: "Закрыть",
     admatch: {
       title: "Через AdMatch",
@@ -223,7 +224,7 @@ export const copy = {
       ],
       price: "Бесплатно",
     },
-    choose: "Выбрать",
+    choose: "Отправить заявку",
     sending: "Отправляем…",
     termsLink: "Подробнее об условиях",
   },
