@@ -2,6 +2,15 @@
 import { z } from "zod";
 import { isValidContact } from "./contact";
 import { NICHES } from "./niches";
+import { TIKTOK_URL } from "./url";
+
+const tiktok = z
+  .string()
+  .trim()
+  .max(200)
+  .refine((v) => v === "" || TIKTOK_URL.test(v), "Ссылка вида https://tiktok.com/@ник")
+  .optional()
+  .default("");
 
 const money = z.number().int().min(0).max(100_000_000).nullable();
 const optInt = (max: number) => z.number().int().min(0).max(max).nullable().optional();
@@ -19,7 +28,7 @@ export const registerSchema = z.object({
   display_name: z.string().trim().min(1, "Как вас зовут?").max(80),
   niches: z.array(z.enum(NICHES)).min(1, "Выберите от 1 до 3 ниш").max(3, "Выберите от 1 до 3 ниш"),
   contact: z.string().trim().min(1).max(100).refine(isValidContact, "Телефон или ник в Telegram"),
-  tiktok_url: z.string().trim().max(200).optional().default(""),
+  tiktok_url: tiktok,
   consent: z.literal(true, { errorMap: () => ({ message: "Нужно согласие" }) }),
 });
 
@@ -32,7 +41,7 @@ export const profileSchema = z.object({
   display_name: z.string().trim().min(1).max(80),
   niches: z.array(z.enum(NICHES)).min(1).max(3),
   contact: z.string().trim().min(1).max(100).refine(isValidContact),
-  tiktok_url: z.string().trim().max(200).optional().default(""),
+  tiktok_url: tiktok,
 });
 
 export const PRICE_KEYS = [
@@ -71,6 +80,22 @@ const screenshot = z
   .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/, "Неверный файл")
   .max(1_200_000, "Скриншот слишком большой");
 
+/** Проверяем, что файл правда картинка (по первым байтам), а не просто назван картинкой. */
+export function isRealImage(dataUrl: string): boolean {
+  const b64 = dataUrl.slice(dataUrl.indexOf(",") + 1, dataUrl.indexOf(",") + 1 + 24);
+  let bin = "";
+  try {
+    bin = typeof atob === "function" ? atob(b64) : Buffer.from(b64, "base64").toString("binary");
+  } catch {
+    return false;
+  }
+  const b = [...bin].map((ch) => ch.charCodeAt(0));
+  const jpeg = b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff;
+  const png = b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47;
+  const webp = bin.slice(0, 4) === "RIFF" && bin.slice(8, 12) === "WEBP";
+  return jpeg || png || webp;
+}
+
 export const statsSchema = z
   .object({
     followers: z.number().int().min(0).max(100_000_000),
@@ -81,7 +106,7 @@ export const statsSchema = z
     audience_age_from: optInt(80),
     audience_age_to: optInt(80),
     audience_gender: z.enum(["f", "m", "mixed"]).nullable().optional(),
-    screenshots: z.array(screenshot).min(1, "Добавьте хотя бы 1 скриншот статистики").max(5, "Не больше 5 скриншотов"),
+    screenshots: z.array(screenshot.refine(isRealImage, "Файл не похож на картинку")).min(1, "Добавьте хотя бы 1 скриншот статистики").max(5, "Не больше 5 скриншотов"),
   })
   .refine((s) => s.audience_age_from == null || s.audience_age_to == null || s.audience_age_from <= s.audience_age_to, {
     message: "Возраст «от» больше «до»",

@@ -45,7 +45,7 @@ export function AdminPanel({ pending, stale, creators }: { pending: PendingItem[
         <h2 className="text-xl font-extrabold">Блогеры с кабинетом · {creators.length}</h2>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full min-w-[560px] text-left text-sm">
-            <thead><tr className="border-b border-line"><th className="py-2">Ник</th><th>Статус</th><th>Подписчики</th><th>Проверено</th><th>Контакт</th></tr></thead>
+            <thead><tr className="border-b border-line"><th className="py-2">Ник</th><th>Статус</th><th>Подписчики</th><th>Проверено</th><th>Контакт</th><th /></tr></thead>
             <tbody>
               {creators.map((c) => (
                 <tr key={c.id} className="border-b border-line/60">
@@ -54,6 +54,7 @@ export function AdminPanel({ pending, stale, creators }: { pending: PendingItem[
                   <td>{n(c.followers)}</td>
                   <td>{c.data_checked_at ?? "—"}</td>
                   <td>{c.contact}</td>
+                  <td><ResetPassword creatorId={c.id} handle={c.handle} /></td>
                 </tr>
               ))}
             </tbody>
@@ -62,6 +63,17 @@ export function AdminPanel({ pending, stale, creators }: { pending: PendingItem[
       </section>
     </div>
   );
+}
+
+function ResetPassword({ creatorId, handle }: { creatorId: string; handle: string }) {
+  const [temp, setTemp] = useState("");
+  async function reset() {
+    if (!confirm(`Выдать @${handle} новый временный пароль? Старый перестанет работать.`)) return;
+    const r = await postJson("/api/admin/reset-password", { creatorId });
+    if (r.ok) setTemp(String(r.data.password));
+  }
+  if (temp) return <span className="font-mono text-xs">Новый пароль: <b>{temp}</b></span>;
+  return <button onClick={reset} className="text-xs font-semibold text-accent-ink underline">Сбросить пароль</button>;
 }
 
 function Review({ item }: { item: PendingItem }) {

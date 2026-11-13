@@ -59,15 +59,18 @@ const cookieOpts = (maxAge: number) => ({
   maxAge,
 });
 
-export async function setCreatorSession(creatorId: string) {
+/** Версия пароля в cookie: после смены пароля все старые входы перестают работать. */
+export const passwordVersion = (hash: string) =>
+  createHmac("sha256", secret()).update(hash).digest("base64url").slice(0, 16);
+
+export async function setCreatorSession(creatorId: string, passwordHash: string) {
   const exp = Math.floor(Date.now() / 1000) + CREATOR_TTL;
-  (await cookies()).set(CREATOR_COOKIE, sign({ cid: creatorId, exp }), cookieOpts(CREATOR_TTL));
+  (await cookies()).set(CREATOR_COOKIE, sign({ cid: creatorId, pv: passwordVersion(passwordHash), exp }), cookieOpts(CREATOR_TTL));
 }
 
-/** id блогера из cookie или null. */
-export async function getCreatorId(): Promise<string | null> {
-  const data = unsign<{ cid: string }>((await cookies()).get(CREATOR_COOKIE)?.value);
-  return data?.cid ?? null;
+/** Данные из cookie без проверки по БД (проверку делает getCreatorId в creatorSession.ts). */
+export async function readCreatorCookie(): Promise<{ cid: string; pv: string } | null> {
+  return unsign<{ cid: string; pv: string }>((await cookies()).get(CREATOR_COOKIE)?.value);
 }
 
 export async function clearCreatorSession() {

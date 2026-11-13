@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/creator/LoginForm";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { getCreatorId } from "@/lib/auth";
+import { getCreatorId } from "@/lib/creatorSession";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Вход для блогеров — AdMatch" };

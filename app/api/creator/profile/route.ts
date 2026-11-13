@@ -1,5 +1,5 @@
 import { json, readJson, serverError } from "@/lib/api";
-import { getCreatorId } from "@/lib/auth";
+import { getCreatorId } from "@/lib/creatorSession";
 import { updateProfile } from "@/lib/creatorData";
 import { profileSchema } from "@/lib/creatorValidation";
 import { fieldErrors } from "@/lib/validation";

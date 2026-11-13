@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Cabinet, type CabinetData } from "@/components/creator/Cabinet";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { getCreatorId } from "@/lib/auth";
+import { getCreatorId } from "@/lib/creatorSession";
 import { todayIsoAlmaty } from "@/lib/availability";
 import { creatorActivity, getAvailability, getProfile, latestSubmission, statsAgeDays } from "@/lib/creatorData";
 

@@ -38,3 +38,24 @@ describe("регистрация", () => {
     expect(registerSchema.safeParse({ ...ok, password: "123" }).success).toBe(false);
   });
 });
+
+import { isRealImage } from "@/lib/creatorValidation";
+import { safeHttpUrl } from "@/lib/url";
+
+describe("защита", () => {
+  it("ссылки javascript: не проходят", () => {
+    expect(safeHttpUrl("javascript:alert(1)")).toBeNull();
+    expect(safeHttpUrl("https://tiktok.com/@x")).toBe("https://tiktok.com/@x");
+  });
+  it("файл должен быть настоящей картинкой", () => {
+    const png = "data:image/png;base64," + Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).toString("base64");
+    const fake = "data:image/png;base64," + Buffer.from("<script>alert(1)</script>").toString("base64");
+    expect(isRealImage(png)).toBe(true);
+    expect(isRealImage(fake)).toBe(false);
+  });
+  it("TikTok только как ссылка на профиль", () => {
+    const ok = { email: "a@b.kz", password: "12345678", handle: "test_x", display_name: "Аня", niches: ["Еда и рестораны"], contact: "@anya_x", consent: true };
+    expect(registerSchema.safeParse({ ...ok, tiktok_url: "javascript:alert(1)" }).success).toBe(false);
+    expect(registerSchema.safeParse({ ...ok, tiktok_url: "https://tiktok.com/@anya_x" }).success).toBe(true);
+  });
+});

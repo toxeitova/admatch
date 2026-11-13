@@ -1,6 +1,6 @@
 import { after } from "next/server";
 import { json, readJson, serverError } from "@/lib/api";
-import { getCreatorId } from "@/lib/auth";
+import { getCreatorId } from "@/lib/creatorSession";
 import { getProfile, updatePrices } from "@/lib/creatorData";
 import { PRICE_KEYS, PRICE_LABELS, pricesSchema } from "@/lib/creatorValidation";
 import { formatPrice } from "@/lib/format";

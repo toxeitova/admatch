@@ -80,6 +80,7 @@ export function Cabinet({ data }: { data: CabinetData }) {
       <PricesForm data={data} />
       <AvailabilityForm initial={data.availability} today={data.today} />
       <ProfileForm data={data} />
+      <PasswordForm />
       {sub && <p className="text-center text-xs text-ink-faint">Последняя отправка аналитики: {new Date(sub.created_at).toLocaleDateString("ru-RU", { timeZone: "Asia/Almaty" })}</p>}
     </div>
   );
@@ -405,6 +406,36 @@ function ProfileForm({ data }: { data: CabinetData }) {
         <Field label="TikTok"><input className="input" value={f.tiktok_url} onChange={(e) => setF({ ...f, tiktok_url: e.target.value })} /></Field>
         {msg && <p role="status" className={`rounded-xl px-4 py-3 text-sm font-semibold ${msg.ok ? "bg-[#DDF3E8] text-[#1E6B47]" : "bg-accent-soft text-accent-ink"}`}>{msg.text}</p>}
         <button type="submit" disabled={busy} className="btn-secondary w-full sm:w-auto">{busy ? "Сохраняем…" : "Сохранить профиль"}</button>
+      </form>
+    </section>
+  );
+}
+
+// ─── Смена пароля ─────────────────────────────────────────────────────
+function PasswordForm() {
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    const r = await postJson("/api/creator/password", { current, next });
+    setBusy(false);
+    if (r.ok) {
+      setCurrent("");
+      setNext("");
+    }
+    setMsg(r.ok ? { ok: true, text: "Пароль изменён. На других устройствах нужно войти заново." } : { ok: false, text: String(r.data.error ?? "Не получилось") });
+  }
+  return (
+    <section className="card p-5 sm:p-6" id="password">
+      <h2 className="text-xl font-extrabold">Пароль</h2>
+      <form onSubmit={submit} className="mt-4 grid gap-4 sm:grid-cols-2">
+        <Field label="Текущий пароль"><input className="input" type="password" value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" /></Field>
+        <Field label="Новый пароль" hint="Минимум 8 символов"><input className="input" type="password" value={next} onChange={(e) => setNext(e.target.value)} autoComplete="new-password" /></Field>
+        {msg && <p role="status" className={`rounded-xl px-4 py-3 text-sm font-semibold sm:col-span-2 ${msg.ok ? "bg-[#DDF3E8] text-[#1E6B47]" : "bg-accent-soft text-accent-ink"}`}>{msg.text}</p>}
+        <button type="submit" disabled={busy || !current || next.length < 8} className="btn-secondary w-full sm:w-auto">{busy ? "Сохраняем…" : "Сменить пароль"}</button>
       </form>
     </section>
   );

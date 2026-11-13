@@ -7,6 +7,7 @@ import { FORMAT_LABELS } from "@/lib/matching";
 import type { Format } from "@/lib/niches";
 import type { PublicMatch } from "@/lib/types";
 import { PRICE_KEYS, PRICE_LABELS } from "@/lib/creatorValidation";
+import { safeHttpUrl } from "@/lib/url";
 import { IconBadgeCheck, IconChevron, IconExternal } from "./Icons";
 
 const c = copy.card;
@@ -198,9 +199,9 @@ export function CreatorCard({
       )}
 
       {/* A9: профиль блогера сразу на карточке (T2, T5) */}
-      {cr.instagram_url && (
+      {safeHttpUrl(cr.instagram_url) && (
         <a
-          href={cr.instagram_url}
+          href={safeHttpUrl(cr.instagram_url)!}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-accent-ink underline-offset-4 hover:underline"
@@ -227,9 +228,9 @@ export function CreatorCard({
           </dl>
 
           <div className="flex flex-wrap gap-2">
-            {cr.past_ad_url && <ExtLink href={cr.past_ad_url}>{c.pastAd}</ExtLink>}
-            {cr.instagram_url && <ExtLink href={cr.instagram_url}>{c.instagram}</ExtLink>}
-            {cr.tiktok_url && <ExtLink href={cr.tiktok_url}>{c.tiktok}</ExtLink>}
+            {safeHttpUrl(cr.past_ad_url) && <ExtLink href={safeHttpUrl(cr.past_ad_url)!}>{c.pastAd}</ExtLink>}
+            {safeHttpUrl(cr.instagram_url) && <ExtLink href={safeHttpUrl(cr.instagram_url)!}>{c.instagram}</ExtLink>}
+            {safeHttpUrl(cr.tiktok_url) && <ExtLink href={safeHttpUrl(cr.tiktok_url)!}>{c.tiktok}</ExtLink>}
           </div>
 
           {cr.last_post_at && <p className="text-sm text-ink-muted">{c.active(formatDate(cr.last_post_at))}</p>}

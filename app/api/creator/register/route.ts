@@ -23,16 +23,17 @@ export async function POST(req: Request) {
   try {
     if (await findAccountByEmail(d.email)) return json({ error: "validation", fields: { email: "Этот email уже зарегистрирован. Войдите." } }, 409);
     if (await handleTaken(d.handle)) return json({ error: "validation", fields: { handle: "Этот ник уже есть в AdMatch. Напишите нам в поддержку." } }, 409);
+    const passwordHash = hashPassword(d.password);
     const creatorId = await createCreatorAccount({
       email: d.email,
-      passwordHash: hashPassword(d.password),
+      passwordHash,
       handle: d.handle,
       display_name: d.display_name,
       niches: d.niches,
       contact: d.contact,
       tiktok_url: d.tiktok_url,
     });
-    await setCreatorSession(creatorId);
+    await setCreatorSession(creatorId, passwordHash);
     after(() => sendTelegram(creatorRegisteredMessage({ handle: d.handle, name: d.display_name, niches: d.niches })));
     return json({ ok: true });
   } catch (e) {

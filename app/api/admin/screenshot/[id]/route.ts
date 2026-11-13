@@ -8,6 +8,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const shot = await getScreenshot(id);
   if (!shot) return new Response("not found", { status: 404 });
   return new Response(Buffer.from(shot.data, "base64"), {
-    headers: { "Content-Type": shot.mime, "Cache-Control": "private, max-age=3600" },
+    headers: {
+      "Content-Type": ["image/jpeg", "image/png", "image/webp"].includes(shot.mime) ? shot.mime : "application/octet-stream",
+      "Cache-Control": "private, no-store",
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "default-src 'none'; sandbox",
+    },
   });
 }

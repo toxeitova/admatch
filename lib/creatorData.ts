@@ -342,3 +342,14 @@ export async function cabinetCreators(): Promise<CreatorProfile[]> {
   if (error) throw error;
   return (data ?? []) as unknown as CreatorProfile[];
 }
+
+export async function getPasswordHash(creatorId: string): Promise<string | null> {
+  const { data, error } = await db().from("creator_accounts").select("password_hash").eq("creator_id", creatorId).maybeSingle();
+  if (error) throw error;
+  return (data as { password_hash: string } | null)?.password_hash ?? null;
+}
+
+export async function setPasswordHash(creatorId: string, passwordHash: string) {
+  const { error } = await db().from("creator_accounts").update({ password_hash: passwordHash }).eq("creator_id", creatorId);
+  if (error) throw error;
+}
